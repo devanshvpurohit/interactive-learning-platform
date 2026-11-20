@@ -315,106 +315,188 @@ export function synthesizeAccurateAnswer(q: QuestionData): GeneratedAnswer {
   }
 
   if (is2Marks) {
-    const summary = `Crisp, exam-oriented definition and technical summary of ${cleanQ} for 2 marks.`;
+    const summary = `Crisp, exam-oriented definition and technical summary of ${cleanQ} for university examinations (2 marks).`;
     const keyPoints = selectedConcept?.keyPoints.slice(0, 3) || [
-      `Formal technical definition according to university syllabus standards.`,
+      `Formal technical definition according to university curriculum standards.`,
       `Core operational mechanism, mathematical formula, or standard syntax.`,
       `Primary distinguishing characteristic and real-world engineering use case.`
     ];
 
-    const content = `### Definition & Core Concept
+    const content = `### Definition & Formal Concept
 **${cleanQ}**:
-In the study of **${unitKnowledge.domain}** (${subj}), this is defined as follows:
+In the study of **${unitKnowledge.domain}** (${subj}), this concept is formally defined as:
 
-> **Formal Technical Definition:** ${selectedConcept?.definition || "A fundamental engineering and computational primitive that specifies standardized protocols, mathematical transformations, or procedural workflows to achieve predictable system outcomes."}
+> **Academic Definition:** ${selectedConcept?.definition || "A foundational computational and engineering primitive specifying formal rules, mathematical transformations, or procedural workflows to achieve verified, predictable system outcomes."}
 
-### Key Technical Points:
-1. **Primary Mechanism:** ${selectedConcept?.mechanism || "Operates as a structured component within the end-to-end pipeline, processing inputs and enforcing domain constraints."}
-2. **Formula / Technical Specification:**
-   ${selectedConcept?.formula ? `$$${selectedConcept.formula}$$` : `$$\\text{Output} = \\text{Transform}(\\text{Input}, \\Theta)$$`}
-3. **Core Application:** ${selectedConcept?.example || "Deployed in enterprise environments to ensure robust data integrity, pattern recognition, or security boundary enforcement."}`;
+---
+
+### Core Technical Specifications & Mechanics:
+1. **Operational Mechanism:** ${selectedConcept?.mechanism || "Operates as a structured component within the end-to-end processing pipeline, transforming discrete or continuous inputs while enforcing domain-specific constraints."}
+2. **Mathematical Formulation / Syntax:**
+   ${selectedConcept?.formula ? `$$${selectedConcept.formula}$$` : `$$\\text{Target}(x) = \\arg\\max_{\\theta \\in \\Theta} \\mathcal{F}(x; \\theta)$$`}
+   *Where $x$ represents the input state, and $\\theta$ denotes parameter or policy configurations.*
+3. **Key Differentiating Feature:** Guarantees deterministic state transitions or bounded probabilistic bounds, preventing unhandled exceptions and error cascades.
+
+---
+
+### Real-World Engineering Example:
+${selectedConcept?.example || "In production environments, this is implemented as an automated microservice component that enforces strict validation rules, validates security boundaries, or provides feature normalization."}`;
 
     return { content, summary, keyPoints };
   }
 
-  // 10 Marks - Multi-Section Comprehensive Long Answer
-  const summary = `Comprehensive, multi-section long answer structured for university examinations with architectural diagrams, mathematical derivations, comparison tables, and practical case studies.`;
+  // 5 / 10 Marks - Multi-Section Comprehensive Long Answer
+  const summary = `Authoritative, comprehensive long answer structured for university examinations with technical architecture diagrams, mathematical formulations, comparative matrices, step-by-step algorithms, real-world case studies, and exam marking checklists.`;
   const keyPoints = selectedConcept?.keyPoints || [
     `Comprehensive conceptual introduction & historical / theoretical context.`,
     `Step-by-step structural architecture and operational workflow.`,
     `Mathematical formulation, algorithmic derivation, or protocol specification.`,
     `Comparative analysis table highlighting trade-offs and alternatives.`,
-    `Real-world implementation case study and exam conclusions.`
+    `Real-world implementation case study, failure modes, and exam conclusions.`
   ];
 
-  const content = `## 1. Introduction & Formal Definition
+  const content = `## 1. Executive Concept Summary & Theoretical Context
 
-**${cleanQ}** represents a cornerstone topic within **${unitKnowledge.domain}** under the **${subj}** university curriculum. Understanding this concept enables practitioners to design resilient architectures, analyze complex theoretical properties, and implement production-grade solutions satisfying Bloom's taxonomy level **${q.taxonomy}** (${q.subsumeLevel || "Advanced Analysis"}).
+**${cleanQ}** constitutes an essential theoretical and practical subject within **${unitKnowledge.domain}** (${subj}). Under university curriculum guidelines, mastering this concept satisfies Bloom's taxonomy cognitive level **${q.taxonomy}** (${q.subsumeLevel || "Advanced Analysis"}) and directly fulfills Course Outcome:
+> *${q.courseOutcome}*
 
-### Conceptual Overview:
-${selectedConcept?.definition || "In computational science and engineering, this mechanism formalizes the translation of theoretical concepts into practical implementations, ensuring rigorous adherence to standard models and empirical principles."}
+### Formal Academic Definition:
+${selectedConcept?.definition || "In computer science and cyber engineering, this mechanism formalizes the translation of theoretical concepts into practical implementations, ensuring rigorous adherence to standard models and empirical principles."}
+
+Historically and architecturally, this addresses the fundamental challenge of ensuring scalability, robustness, and deterministic verification in complex distributed systems or language processing pipelines.
 
 ---
 
-## 2. Technical Architecture & Operational Principles
+## 2. Detailed Technical Architecture & Operational Principles
 
 \`\`\`
-[Input / Initial State] ───► [Core Transformation / Processing] ───► [Verification & Control] ───► [Optimized Output]
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 SYSTEM ARCHITECTURAL PIPELINE                                   │
+└────────────────────────────────┬────────────────────────────────┬───────────────────────────────┘
+                                 │
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1. INGESTION & NORMALIZATION STAGE                                                              │
+│    • Raw Telemetry / Token Ingestion         • Input Sanitization & Boundary Validation         │
+│    • Noise Filtering & Outlier Removal       • Structured Intermediate Representation           │
+└────────────────────────────────┬────────────────────────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 2. CORE TRANSFORMATION & EXECUTION KERNEL                                                       │
+│    • Algorithmic State Transitions           • Mathematical Optimization / Rule Evaluation      │
+│    • Dynamic Feature Extraction              • Policy Enforcement & Controlled Exploitation     │
+└────────────────────────────────┬────────────────────────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 3. VERIFICATION, CONVERGENCE & POST-PROCESSING                                                  │
+│    • Residual Risk / Error Evaluation        • Normalization across State Space                 │
+│    • Structured Telemetry & Audit Logs       • Actionable Upstream / Downstream Dispatch        │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
 \`\`\`
 
-The operational lifecycle follows three sequential phases:
+The operational lifecycle follows three sequential, tightly controlled phases:
 1. **Initialization & Context Preparation:**
    - Ingests raw inputs, environmental parameters, and boundary constraints.
-   - Normalizes variances, handles preliminary error checking, and prepares structured data representations.
+   - Normalizes variances, handles preliminary error checking, and prepares structured data representations (matrices, parse trees, or packet buffers).
 2. **Execution & Algorithmic Transformation:**
    - ${selectedConcept?.mechanism || "Applies mathematical models, state transitions, or adversarial security methodologies to evaluate the objective function."}
-   - Iteratively adjusts internal state representations based on feedback metrics.
+   - Iteratively adjusts internal state representations based on feedback metrics or objective loss gradients.
 3. **Verification & Post-Processing:**
-   - Validates outputs against ground truth, evaluates residual risk, and formats results for downstream integration.
+   - Validates outputs against ground truth or policy invariants, evaluates residual risk, and formats results for downstream integration.
 
 ---
 
-## 3. Mathematical Foundations & Formulations
+## 3. Mathematical Foundations & Algorithmic Formulations
 
-When analyzed quantitatively, the operational behavior is governed by the following mathematical and algorithmic specifications:
+When analyzed quantitatively, the operational behavior is governed by rigorous mathematical formulations:
 
-${selectedConcept?.formula ? `$$${selectedConcept.formula}$$` : `$$P(X \\mid Y) = \\frac{P(Y \\mid X) \\cdot P(X)}{P(Y)}$$`}
+${selectedConcept?.formula ? `$$${selectedConcept.formula}$$` : `$$P(X \\mid Y) = \\frac{P(Y \\mid X) \\cdot P(X)}{P(Y)} = \\frac{P(Y \\mid X) \\cdot P(X)}{\\sum_{x'} P(Y \\mid x') P(x')}$$`}
 
-Where:
-- The numerator captures observation likelihoods and empirical frequency distributions.
-- The denominator provides normalization across the complete state space, guaranteeing valid probability bounds ($[0, 1]$).
-- Computations are evaluated in log-space ($\\log P$) to prevent arithmetic floating-point underflow.
-
----
-
-## 4. Comprehensive Comparative Analysis
-
-| Feature Dimension | Classical / Baseline Approach | Modern / Advanced Approach |
-| :--- | :--- | :--- |
-| **Operational Methodology** | Manual heuristics, deterministic rules, or basic scanning | Statistical modeling, deep contextual learning, or automated frameworks |
-| **Scalability & Coverage** | Bounded; suffers from combinatorial explosion on large inputs | High; scales linearly ($O(n)$) across big data corpora and distributed networks |
-| **Ambiguity / Noise Handling** | Brittle; fails or throws exceptions on unhandled edge cases | Probabilistic ranking; provides graceful degradation and confidence scoring |
-| **Resource Overhead** | Low computational footprint on CPU | Requires dedicated memory structures or GPU acceleration |
-| **Primary Failure Mode** | High false positive or false negative rates | Requires extensive training corpora or strict scope management |
+### Mathematical Analysis & Parameter Specifications:
+- **Likelihood & Transition Probabilities:** Evaluated over empirical observations to guarantee statistically sound estimations.
+- **Normalization Factor:** The denominator acts as a partition function guaranteeing valid probability bounds within $[0, 1]$.
+- **Log-Space Optimization:** In practical computing environments, products are transformed into summations using log-probabilities to prevent arithmetic floating-point underflow:
+  $$\\log P(X_1, X_2, \\dots, X_n) = \\sum_{i=1}^n \\log P(X_i \\mid X_{<i})$$
 
 ---
 
-## 5. Practical Implementation Case Study & Best Practices
+## 4. Algorithmic Implementation & Step-by-Step Execution Flow
 
-### Real-World Engineering Example:
+The canonical procedural implementation is formalized as follows:
+
+\`\`\`
+Algorithm: Comprehensive Execution Procedure
+Input    : Initial State S_0, Parameter Space Theta, Threshold Epsilon
+Output   : Optimal Terminating State S* with Convergence Metrics
+
+Step 1: [Initialization]
+        Set current iteration k <- 0.
+        Initialize state vector S_k <- S_0.
+        Validate environment boundary conditions and allocate memory structures.
+
+Step 2: [Iterative Processing Loop]
+        While (error > Epsilon and k < Max_Iterations) Do:
+            a. Compute local gradient or transition matrix: Delta_k <- EvaluateKernel(S_k, Theta).
+            b. Apply transformation: S_{k+1} <- UpdateState(S_k, Delta_k).
+            c. Compute residual error / objective score: error <- ||S_{k+1} - S_k||.
+            d. Increment iteration counter: k <- k + 1.
+        End While.
+
+Step 3: [Verification & Boundary Assertion]
+        Assert that S* satisfies all safety, integrity, and domain constraints.
+        If constraints violated, trigger deterministic fallback mechanism.
+
+Step 4: [Telemetry Generation]
+        Format output telemetry, record audit hashes, and return S*.
+\`\`\`
+
+---
+
+## 5. Comprehensive Comparative Analysis Matrix
+
+| Evaluation Dimension | Classical / Baseline Approach | Modern / Advanced Approach | Engineering Significance |
+| :--- | :--- | :--- | :--- |
+| **Operational Methodology** | Manual heuristics, deterministic rules, or basic scanning | Statistical modeling, deep contextual learning, or automated frameworks | Eliminates human curation bottlenecks and brittle failures |
+| **Computational Complexity** | $O(N)$ or $O(N^2)$ with high variance | $O(N \\log N)$ or amortized $O(1)$ lookup | Enables real-time line-rate processing and web-scale throughput |
+| **Data & Memory Footprint** | Low memory footprint; static rule tables | High dynamic RAM or GPU VRAM required | Demands optimized cache hierarchies and hardware accelerators |
+| **Ambiguity & Noise Handling** | Brittle; fails or throws unhandled exceptions | Probabilistic ranking; provides graceful degradation | Guarantees system resilience in noisy, real-world conditions |
+| **Scalability & Coverage** | Bounded; suffers from combinatorial explosion | High; scales across big-data corpora and enterprise subnets | Essential for multi-million user web services or enterprise LANs |
+| **Failure Mode** | Silent truncation or total pipeline crash | Controlled fallback with confidence scoring | Facilitates automated error recovery and continuous telemetry |
+
+---
+
+## 6. Real-World Engineering Case Study & Industrial Best Practices
+
+### Practical Implementation Scenario:
 ${selectedConcept?.example || "In enterprise production systems, this is implemented as an automated microservice that processes live telemetry streams, applies verified filters, and produces audited decision records."}
 
-### Key Best Practices:
-1. **Enforce Boundary Validation:** Strictly sanitize all inputs and handle out-of-vocabulary or out-of-scope conditions cleanly.
-2. **Maintain Comprehensive Logging:** Retain reproducible audit logs of all transformations, state transitions, and decision boundaries.
-3. **Fail-Safe Defaults:** Ensure systems gracefully degrade to conservative, secure default states under ambiguous or hostile environmental conditions.
+### Key Industrial Best Practices:
+1. **Defensive Input Validation:** Strictly validate and sanitize all inputs at the boundary to prevent buffer overflows, injection flaws, or out-of-vocabulary crashes.
+2. **Immutable Audit Trails:** Retain cryptographically hashed logs of all transformations, state transitions, and decision records for forensic accountability.
+3. **Graceful Degradation:** When unexpected anomalies occur, systems must transition to a pre-defined secure or conservative default state rather than failing open.
 
 ---
 
-## 6. Exam Summary & Key Takeaways
-1. **Core Concept:** Directly answers **${cleanQ}** by establishing theoretical rigor and practical engineering utility.
-2. **Bloom's Alignment:** Fulfills course outcome **${q.courseOutcome}** by balancing mathematical derivation with real-world architectural design.
-3. **Key Trade-off:** System design requires balancing operational throughput, computational complexity, and predictive precision.`;
+## 7. Potential Vulnerabilities, Bottlenecks & Trade-Offs
+
+When deploying this system at scale, engineers must address the following critical trade-offs:
+- **Time vs. Space Complexity Trade-off:** Increasing memoization or precomputed lookup caches reduces latency but exponentially expands RAM consumption.
+- **Precision vs. Recall Trade-off:** Overly strict rules eliminate false positives but elevate false negative rates, potentially discarding critical valid events.
+- **Security & Adversarial Risks:** Attackers may craft adversarial perturbations (or evasion payloads) specifically designed to trigger worst-case algorithmic complexity ($O(N^2)$ denial of service).
+
+---
+
+## 8. University Exam Preparation Guide & Examiner Marking Checklist
+
+> [!IMPORTANT]
+> **Key Exam Points to Secure Maximum Marks (10/10):**
+> - **Accurate Definitions:** Clearly reproduce the formal definition in Section 1, highlighting Bloom's taxonomy alignment.
+> - **Architectural Workflow:** Draw the 3-stage ASCII pipeline diagram showing Ingestion, Execution, and Verification.
+> - **Mathematical Derivations:** Write down the core equation and explain each variable and log-space transformation explicitly.
+> - **Comparative Matrix:** Reproduce the 6-dimension comparison table to score structured, objective evaluation marks.
+> - **Real-World Case Study:** Always cite a concrete industrial example to demonstrate practical engineering mastery.`;
 
   return { content, summary, keyPoints };
 }
