@@ -1,0 +1,259 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Answer {
+  id           String   @id @default(cuid())
+  questionId   String
+  content      String
+  summary      String?
+  keyPoints    String?
+  status       String   @default("AI Generated")
+  reported     Boolean  @default(false)
+  reportReason String?
+  version      Int      @default(1)
+  reviewedBy   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  Question     Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+}
+
+model Bookmark {
+  id           String   @id @default(cuid())
+  userId     String   @default("default-user")
+  questionId String
+  notes      String?
+  createdAt  DateTime @default(now())
+  Question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+}
+
+model ChatMessage {
+  id           String   @id @default(cuid())
+  chatSessionId String
+  sender        String
+  content       String
+  referencedQId String?
+  createdAt     DateTime    @default(now())
+  ChatSession   ChatSession @relation(fields: [chatSessionId], references: [id], onDelete: Cascade)
+}
+
+model ChatSession {
+  id           String   @id @default(cuid())
+  userId      String        @default("default-user")
+  title       String        @default("New Study Chat")
+  subject     String?
+  mode        String        @default("general_tutor")
+  createdAt   DateTime      @default(now())
+  updatedAt    DateTime @updatedAt
+  ChatMessage ChatMessage[]
+  User        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Flowchart {
+  id           String   @id @default(cuid())
+  questionId  String?
+  title       String
+  description String?
+  category    String
+  nodes       String
+  edges       String
+  steps       String?
+  createdAt   DateTime  @default(now())
+  updatedAt    DateTime @updatedAt
+  Question    Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Question {
+  id           String   @id @default(cuid())
+  qNo           Int
+  subjectId     String
+  unitId        String
+  topicId       String?
+  topicName     String?
+  part          String
+  partName      String
+  marks         Int
+  question      String
+  taxonomy      String
+  courseOutcome String
+  subsumeLevel  String?
+  keywords      String?
+  isRepeated    Boolean         @default(false)
+  isImportant   Boolean         @default(false)
+  difficulty    String          @default("Medium")
+  createdAt     DateTime        @default(now())
+  updatedAt    DateTime @updatedAt
+  Answer        Answer[]
+  Bookmark      Bookmark[]
+  Flowchart     Flowchart[]
+  Topic         Topic?          @relation(fields: [topicId], references: [id])
+  Unit          Unit            @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  Subject       Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  StudyProgress StudyProgress[]
+  Visualization Visualization[]
+
+  @@index([part])
+  @@index([marks])
+  @@index([subjectId, unitId])
+}
+
+model StudyProgress {
+  id           String   @id @default(cuid())
+  userId      String    @default("default-user")
+  questionId  String
+  completed   Boolean   @default(false)
+  confidence  Int       @default(0)
+  timeSpent   Int       @default(0)
+  lastStudied DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt    DateTime @updatedAt
+  Question    Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+}
+
+model StudySession {
+  id           String   @id @default(cuid())
+  userId             String   @default("default-user")
+  mode               String
+  subjectId          String?
+  unitNumber         Int?
+  totalScore         Int?
+  totalQuestions     Int
+  completedQuestions Int      @default(0)
+  durationSeconds    Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  User               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Subject {
+  id           String   @id @default(cuid())
+  code             String             @unique
+  name             String
+  department       String
+  regulation       String
+  semester         String
+  credits          Int                @default(3)
+  description      String?
+  totalHours       Int                @default(48)
+  createdAt        DateTime           @default(now())
+  updatedAt    DateTime @updatedAt
+  Question         Question[]
+  Syllabus         Syllabus[]
+  Unit             Unit[]
+  UploadedDocument UploadedDocument[]
+}
+
+model Syllabus {
+  id           String   @id @default(cuid())
+  subjectId  String
+  version    String   @default("1.0")
+  rawText    String?
+  objectives String
+  outcomes   String
+  textbooks  String?
+  references String?
+  createdAt  DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  Subject    Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+}
+
+model Topic {
+  id           String   @id @default(cuid())
+  unitId      String
+  name        String
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt    DateTime @updatedAt
+  Question    Question[]
+  Unit        Unit       @relation(fields: [unitId], references: [id], onDelete: Cascade)
+}
+
+model Unit {
+  id           String   @id @default(cuid())
+  unitNumber  Int
+  roman       String
+  title       String
+  hours       Int        @default(9)
+  description String?
+  subjectId   String
+  createdAt   DateTime   @default(now())
+  updatedAt    DateTime @updatedAt
+  Question    Question[]
+  Topic       Topic[]
+  Subject     Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([subjectId, unitNumber])
+}
+
+model UploadedDocument {
+  id           String   @id @default(cuid())
+  subjectId               String?
+  fileName                String
+  fileType                String
+  filePath                String
+  fileSize                Int
+  docType                 String
+  status                  String   @default("processed")
+  extractedQuestionsCount Int      @default(0)
+  validationReport        String?
+  createdAt               DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  Subject                 Subject? @relation(fields: [subjectId], references: [id])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email         String?         @unique
+  name          String?
+  role          String          @default("student")
+  createdAt     DateTime        @default(now())
+  updatedAt    DateTime @updatedAt
+  Bookmark      Bookmark[]
+  ChatSession   ChatSession[]
+  StudyProgress StudyProgress[]
+  StudySession  StudySession[]
+  UserApiKey    UserApiKey[]
+}
+
+model UserApiKey {
+  id           String   @id @default(cuid())
+  userId       String   @default("default-user")
+  provider     String   @default("gemini")
+  encryptedKey String
+  iv           String
+  authTag      String
+  keyHint      String
+  isValid      Boolean  @default(true)
+  lastTestedAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, provider])
+}
+
+model Visualization {
+  id           String   @id @default(cuid())
+  questionId  String?
+  title       String
+  conceptType String
+  description String?
+  config      String
+  labels      String?
+  createdAt   DateTime  @default(now())
+  updatedAt    DateTime @updatedAt
+  Question    Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
