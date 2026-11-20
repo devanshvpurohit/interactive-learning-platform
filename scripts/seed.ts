@@ -2,6 +2,18 @@ import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 import { parseQuestionBankPdf } from "../src/lib/pdf-parser";
+import { getAcad40Unit1Answer } from "./answers/acad40-u1";
+import { getAcad40Unit2Answer } from "./answers/acad40-u2";
+import { getAcad40Unit3Answer } from "./answers/acad40-u3";
+import { getAcad40Unit4Answer } from "./answers/acad40-u4";
+import { getAcad40Unit5Answer } from "./answers/acad40-u5";
+import { getAcsd53Unit1Answer } from "./answers/acsd53-u1";
+import { getAcsd53Unit2Answer } from "./answers/acsd53-u2";
+import { getAcsd53Unit3Answer } from "./answers/acsd53-u3";
+import { getAcsd53Unit4Answer } from "./answers/acsd53-u4";
+import { getAcsd53Unit5Answer } from "./answers/acsd53-u5";
+import { synthesizeAccurateAnswer } from "./answers/synthesizer";
+import { QuestionData } from "./answers/types";
 
 const prisma = new PrismaClient();
 
@@ -152,118 +164,32 @@ export function generateExamAnswer(
   },
   subjectCode: string
 ): { content: string; summary: string; keyPoints: string[] } {
-  const marks = q.marks;
-  const is2Marks = marks === 2;
-  const isLong = marks >= 10;
-  const qClean = q.question.replace(/\?$/, "");
+  const qData: QuestionData = {
+    id: "temp-id",
+    qNo: 1,
+    part: q.part,
+    marks: q.marks,
+    question: q.question,
+    taxonomy: q.taxonomy,
+    courseOutcome: q.courseOutcome,
+    subsumeLevel: q.subsumeLevel,
+    unitNumber: 1,
+    subjectCode: subjectCode,
+  };
 
-  let content = "";
-  let summary = "";
-  let keyPoints: string[] = [];
-
-  if (is2Marks) {
-    summary = `Concise university exam definition and technical breakdown for 2 marks.`;
-    keyPoints = [
-      `Precise academic definition adhering to course syllabus.`,
-      `Core formula, syntax, or architecture standard.`,
-      `Key distinguishing characteristic or operational role.`,
-    ];
-
-    content = `### Definition & Core Concept
-
-**${qClean}**:
-In the context of **${q.moduleTitle}**, this refers to the fundamental mechanism or principle defined as follows:
-
-> **Formal Definition:** An established computational or security primitive that specifies structured rules, mathematical transformations, or procedural workflows to achieve predictable system outcomes.
-
-### Key Points (Exam Takeaways):
-1. **Primary Purpose:** Directly supports operational goals by ensuring consistent data representation, pattern identification, or risk boundary enforcement.
-2. **Standard Application:** Widely applied in standard pipelines (e.g. preprocessing, feature extraction, reconnaissance, or vulnerability auditing).
-3. **Formula / Technical Specification:**
-   $$\\text{Score} = f(\\text{Input}, \\Theta)$$ where $\\Theta$ denotes standard model or rule parameters.
-
-### Typical Example / Use Case:
-In real-world deployment, this is utilized to reliably differentiate between valid states and edge cases while keeping computational complexity minimized.`;
-  } else {
-    // 5 or 10 marks
-    summary = `Comprehensive, multi-section long answer structured for university examinations with diagrams, tables, and academic conclusions.`;
-    keyPoints = [
-      `Comprehensive conceptual introduction & historical context.`,
-      `Step-by-step structural breakdown and architectural components.`,
-      `Comparative tabular analysis highlighting trade-offs.`,
-      `Mathematical formulations / operational flow.`,
-      `Practical enterprise or engineering applications and conclusion.`,
-    ];
-
-    content = `## 1. Introduction & Theoretical Background
-
-**${qClean}** forms an essential pillar within **${q.moduleTitle}** (${subjectCode}). Understanding this concept enables engineers and practitioners to systematically model complex interactions, optimize system behavior, and mitigate operational risks.
-
-### Conceptual Overview:
-Under university curriculum standards (${q.courseOutcome}), this subject matter addresses how foundational theories translate into concrete engineering practices. The objective is to satisfy Bloom's taxonomy level: **${q.taxonomy}** (${q.subsumeLevel}).
-
----
-
-## 2. Detailed Technical Architecture & Principles
-
-\`\`\`
-[Input / Initial State] ───► [Core Processing / Analysis] ───► [Evaluation & Verification] ───► [Optimized Output]
-\`\`\`
-
-The operational methodology follows three sequential phases:
-
-1. **Initialization & Context Preparation:**
-   - Acquisition of structured inputs, telemetry, or lexical items.
-   - Normalization of environmental noise, token variants, or protocol discrepancies.
-2. **Execution & Algorithmic Transformation:**
-   - Application of mathematical transformations or penetration methodologies.
-   - Dynamic evaluation against objective functions or security policy constraints.
-3. **Verification & Post-Processing:**
-   - Error minimization, likelihood estimation, or residual risk reporting.
-   - Synthesis of actionable intelligence for downstream modules.
-
----
-
-## 3. Mathematical Foundations & Formulations
-
-When analyzing this system quantitatively, the transition or performance metric is evaluated via probabilistic estimation or risk scoring:
-
-$$P(X | Y) = \\frac{P(Y | X) \\cdot P(X)}{P(Y)}$$
-
-Where:
-- $P(X | Y)$ represents the posterior probability of the target hypothesis or state.
-- $P(Y | X)$ denotes the observation likelihood derived from empirical corpus statistics or scan results.
-- $P(X)$ specifies the prior distribution across established categories.
-
----
-
-## 4. Comparative Analysis
-
-| Dimension | Classical / Baseline Approach | Modern / Advanced Approach |
-| :--- | :--- | :--- |
-| **Methodology** | Deterministic heuristics or manual scanning | Statistical estimation, machine learning, or automated frameworks |
-| **Scalability** | High manual overhead; struggles with sparse data | Automated, highly parallelizable across large corpora / networks |
-| **Accuracy** | Prone to brittle rule conflicts or false positives | Robust probabilistic ranking and contextual verification |
-| **Flexibility** | Rigid, requires continuous manual updates | Adaptable via continuous training or dynamic payload adaptation |
-
----
-
-## 5. Practical Implementation & Industry Best Practices
-
-### Key Engineering Guidelines:
-- **Avoid Overfitting / Premature Exploitation:** Maintain proper smoothing thresholds or verified authorization before execution.
-- **Maintain Full Audit Trails:** Every transformation, log entry, and evidence artifact must be reproducible and documented.
-- **Fail-Safe Defaults:** Systems should gracefully degrade under out-of-vocabulary or network isolation conditions.
-
----
-
-## 6. Conclusion & Exam Summary
-
-To summarize for examinations: **${qClean}** provides the essential framework for balancing accuracy, efficiency, and robustness. Candidates must highlight the mathematical formulation, diagrammatic pipeline, and comparative advantages in their exam scripts to secure full marks.`;
+  let answer: { content: string; summary: string; keyPoints: string[] } | null = null;
+  if (subjectCode === "ACAD40") {
+    answer = getAcad40Unit1Answer(qData) || getAcad40Unit2Answer(qData) || getAcad40Unit3Answer(qData) || getAcad40Unit4Answer(qData) || getAcad40Unit5Answer(qData);
+  } else if (subjectCode === "ACSD53") {
+    answer = getAcsd53Unit1Answer(qData) || getAcsd53Unit2Answer(qData) || getAcsd53Unit3Answer(qData) || getAcsd53Unit4Answer(qData) || getAcsd53Unit5Answer(qData);
   }
-
-  return { content, summary, keyPoints };
+  if (!answer) {
+    answer = synthesizeAccurateAnswer(qData);
+  }
+  return answer;
 }
+
+
 
 // Flowchart templates
 export const FLOWCHARTS_DATA = [
