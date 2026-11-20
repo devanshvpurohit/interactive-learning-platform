@@ -21,6 +21,7 @@
 .env*.local
 *.db
 *.db-journal
+!prisma/dev.db
 uploads/
 
 # misc
